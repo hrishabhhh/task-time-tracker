@@ -3,11 +3,17 @@
 import { useState } from "react";
 
 import type { Task, TaskStatus } from "@/types/task";
+import TaskTimer from "@/components/task-timer";
+import type { TimeLog } from "@/types/time-log";
 
 type TaskCardProps = {
   task: Task;
+  timeLogs: TimeLog[];
+  hasAnotherActiveTimer: boolean;
   onUpdated: (task: Task) => void;
   onDeleted: (taskId: string) => void;
+  onTimerStarted: (timeLog: TimeLog) => void;
+  onTimerStopped: (timeLog: TimeLog) => void;
 };
 
 const statusLabels: Record<TaskStatus, string> = {
@@ -18,8 +24,12 @@ const statusLabels: Record<TaskStatus, string> = {
 
 export default function TaskCard({
   task,
+  timeLogs,
+  hasAnotherActiveTimer,
   onUpdated,
   onDeleted,
+  onTimerStarted,
+  onTimerStopped,
 }: TaskCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(task.title);
@@ -111,6 +121,9 @@ export default function TaskCard({
       setIsSaving(false);
     }
   }
+  const hasActiveTimer = timeLogs.some(
+    (log) => log.task_id === task.id && log.ended_at === null,
+  );
 
   if (isEditing) {
     return (
@@ -208,7 +221,13 @@ export default function TaskCard({
           ))}
         </select>
       </div>
-
+      <TaskTimer
+        taskId={task.id}
+        timeLogs={timeLogs}
+        hasAnotherActiveTimer={hasAnotherActiveTimer}
+        onTimerStarted={onTimerStarted}
+        onTimerStopped={onTimerStopped}
+      />
       <div className="mt-5 flex items-center justify-between border-t border-gray-100 pt-4">
         <p className="text-xs text-gray-400">
           Created {new Date(task.created_at).toLocaleDateString()}
@@ -227,8 +246,13 @@ export default function TaskCard({
           <button
             type="button"
             onClick={handleDelete}
-            disabled={isSaving}
-            className="text-sm font-medium text-red-600 hover:text-red-700"
+            disabled={isSaving || hasActiveTimer}
+            title={
+              hasActiveTimer
+                ? "Stop the timer before deleting this task"
+                : undefined
+            }
+            className="text-sm font-medium text-red-600 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Delete
           </button>

@@ -1,12 +1,13 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-
+import type { TimeLog } from "@/types/time-log";
 import TaskCard from "@/components/task-card";
 import type { Task } from "@/types/task";
 
 export default function TaskManager() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [timeLogs, setTimeLogs] = useState<TimeLog[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -16,29 +17,37 @@ export default function TaskManager() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function loadTasks() {
+    async function loadData() {
       try {
-        const response = await fetch("/api/tasks");
+        const [tasksResponse, logsResponse] = await Promise.all([
+          fetch("/api/tasks"),
+          fetch("/api/time-logs"),
+        ]);
 
-        const data = await response.json();
+        const tasksData = await tasksResponse.json();
+        const logsData = await logsResponse.json();
 
-        if (!response.ok) {
-          throw new Error(data.error ?? "Failed to load tasks");
+        if (!tasksResponse.ok) {
+          throw new Error(tasksData.error ?? "Failed to load tasks");
         }
 
-        setTasks(data.tasks);
+        if (!logsResponse.ok) {
+          throw new Error(logsData.error ?? "Failed to load time logs");
+        }
+
+        setTasks(tasksData.tasks);
+        setTimeLogs(logsData.timeLogs);
       } catch (error) {
         setError(
-          error instanceof Error ? error.message : "Failed to load tasks",
+          error instanceof Error ? error.message : "Failed to load data",
         );
       } finally {
         setIsLoading(false);
       }
     }
 
-    loadTasks();
+    loadData();
   }, []);
-
   async function handleCreateTask(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -92,8 +101,22 @@ export default function TaskManager() {
     setTasks((currentTasks) =>
       currentTasks.filter((task) => task.id !== taskId),
     );
+
+    setTimeLogs((currentLogs) =>
+      currentLogs.filter((log) => log.task_id !== taskId),
+    );
   }
 
+  function handleTimerStarted(timeLog: TimeLog) {
+    setTimeLogs((currentLogs) => [timeLog, ...currentLogs]);
+  }
+
+  function handleTimerStopped(timeLog: TimeLog) {
+    setTimeLogs((currentLogs) =>
+      currentLogs.map((log) => (log.id === timeLog.id ? timeLog : log)),
+    );
+  }
+  const activeTimeLog = timeLogs.find((log) => log.ended_at === null);
   return (
     <div className="space-y-8">
       <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -192,8 +215,14 @@ export default function TaskManager() {
               <TaskCard
                 key={task.id}
                 task={task}
+                timeLogs={timeLogs}
+                hasAnotherActiveTimer={
+                  Boolean(activeTimeLog) && activeTimeLog?.task_id !== task.id
+                }
                 onUpdated={handleTaskUpdated}
                 onDeleted={handleTaskDeleted}
+                onTimerStarted={handleTimerStarted}
+                onTimerStopped={handleTimerStopped}
               />
             ))}
           </div>
