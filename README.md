@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Task Tracker
 
-## Getting Started
+A full-stack task and time tracking application built as part of the Suntek AI Full Stack Engineer assignment.
 
-First, run the development server:
+Users can create and manage tasks, track time using a real-time timer, review their time logs, and view a daily productivity summary.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Live Demo
+
+[View Live Application]: https://task-time-tracker-plum.vercel.app/
+
+## Features
+
+### Authentication
+
+- Sign up with email and password
+- Log in and log out
+- Protected application routes
+- User-specific task and time-log data
+- Row Level Security for database-level authorization
+
+### Task Management
+
+- Create tasks with a title and optional description
+- View all tasks
+- Edit task details
+- Change task status:
+  - Pending
+  - In Progress
+  - Completed
+- Delete tasks
+
+### Time Tracking
+
+- Start and stop a timer for any task
+- Live elapsed-time display
+- Timer state persists across page refreshes
+- Each tracking session is stored as a time log
+- Total tracked time is displayed for each task
+- Only one timer can be active per user at a time
+
+### Daily Summary
+
+The dashboard displays:
+
+- Total time tracked today
+- Number of tasks worked on today
+- Completed tasks
+- Pending and in-progress tasks
+- Time spent on individual tasks today
+
+### Time Log History
+
+Users can review previous tracking sessions including:
+
+- Task
+- Start time
+- End time
+- Duration
+
+Completed time logs can also be deleted.
+
+## Tech Stack
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Supabase Auth
+- Supabase PostgreSQL
+- Supabase Row Level Security
+- Zod
+- Vercel
+
+## Architecture
+
+The application uses Next.js App Router and REST Route Handlers.
+
+The frontend communicates with API routes such as:
+
+```text
+GET     /api/tasks
+POST    /api/tasks
+GET     /api/tasks/:id
+PATCH   /api/tasks/:id
+DELETE  /api/tasks/:id
+
+POST    /api/tasks/:id/timer/start
+POST    /api/tasks/:id/timer/stop
+
+GET     /api/time-logs
+DELETE  /api/time-logs/:id
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
