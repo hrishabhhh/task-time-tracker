@@ -10,9 +10,7 @@ https://task-time-tracker-plum.vercel.app/
 
 ## GitHub Repository
 
-[`YOUR_GITHUB_REPOSITORY_URL`](https://github.com/hrishabhhh/task-time-tracker)
-
-> Replace the placeholder above with your actual GitHub repository URL before submission.
+(https://github.com/hrishabhhh/task-time-tracker)
 
 ---
 
