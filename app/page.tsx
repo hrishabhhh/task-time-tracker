@@ -1,11 +1,13 @@
-export default function Home() {
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <h1 className="text-3xl font-semibold text-gray-900">Task Tracker</h1>
+import { redirect } from "next/navigation";
 
-        <p className="mt-2 text-gray-600">Manage tasks and track your time.</p>
-      </div>
-    </main>
-  );
+import { getAuthenticatedUser } from "@/lib/auth";
+
+export default async function HomePage() {
+  const user = await getAuthenticatedUser();
+
+  if (user) {
+    redirect("/dashboard");
+  }
+
+  redirect("/login");
 }
