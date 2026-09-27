@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import type { TimeLog } from "@/types/time-log";
 import TaskCard from "@/components/task-card";
 import type { Task } from "@/types/task";
+import DailySummary from "@/components/daily-summary";
 
 export default function TaskManager() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -119,6 +120,7 @@ export default function TaskManager() {
   const activeTimeLog = timeLogs.find((log) => log.ended_at === null);
   return (
     <div className="space-y-8">
+      {!isLoading && <DailySummary tasks={tasks} timeLogs={timeLogs} />}
       <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="mb-5">
           <h2 className="text-lg font-semibold text-gray-900">Create task</h2>
